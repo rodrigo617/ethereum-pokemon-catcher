@@ -18,7 +18,7 @@ const renderPokemons = async (page, pageSize) => {
 
   const ownedQueries = [];
   for (let i = 0; i < results.length; i++) {
-    ownedQueries.push(checkOwnership(results[i].name));
+    ownedQueries.push(window.checkOwnership(results[i].name));
   }
 
   const ownedDictionary = await Promise.all(ownedQueries);
@@ -57,7 +57,21 @@ const renderPokemons = async (page, pageSize) => {
   }
 };
 
-const connectWeb3 = async () => {};
+const connectWeb3 = async () => {
+  let provider;
+  if(window.ethereum){
+    provider = window.ethereum;
+    await window.ethereum.enable();
+  }else if(window.web3){
+    provider = window.web3.givenProvider;
+  } else {
+    alert('Por favor instala MetaMask');
+  }
+  web3 = new Web3(provider);
+
+};
+
+
 
 window.checkOwnership = async (pokemonName) => {};
 
@@ -70,18 +84,18 @@ window.onload = async () => {
     contract.networks[5777].address
   );
 
-  console.log(PokeCatcher);
 
-  // State variables
+
+  //State variables
   let pokemonFilters = {
     page: 1,
     pageSize: 20,
   };
 
-  // Initial render
+  //Initial render
   renderPokemons(pokemonFilters.page, pokemonFilters.pageSize);
 
-  // Listeners
+  //Listeners
   const pokemonPage = document.getElementById('pokemon-page');
   pokemonPage.onchange = ({ target: { value } }) => {
     pokemonFilters.page = Number(value);
